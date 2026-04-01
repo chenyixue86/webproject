@@ -1,27 +1,31 @@
-const hamburger = document.querySelector(".nav__hamburger");
-const linksContainer = document.querySelector(".nav__menu");
-const links = document.querySelectorAll(".nav__menu__link");
+async function loadProducts() {
+  const res = await fetch('https://fakestoreapi.com/products');
+  const products = await res.json();
 
-hamburger.addEventListener("click", () => {
-  linksContainer.classList.toggle("active");
-  hamburger.classList.toggle("active");
-});
+  const container = document.getElementById('products');
 
-window.addEventListener("resize", () => {
-  if (window.matchMedia("(max-width: 550px)").matches) {
-    closeMenu();
-  }
-});
-
-if (window.matchMedia("(max-witdh: 550px").matches) {
-  closeMenu();
+  products.forEach(p => {
+    const div = document.createElement('div');
+    div.innerHTML = `
+      <h3>${p.title}</h3>
+      <p>€${p.price}</p>
+      <button onclick="addToCart('${p.title}')">Add to cart</button>
+    `;
+    container.appendChild(div);
+  });
 }
 
-function closeMenu() {
-  links.forEach((link) => {
-    link.addEventListener("click", () => {
-      linksContainer.classList.remove("active");
-      hamburger.classList.remove("active");
-    });
-  });
+loadProducts();
+
+
+let cart = [];
+
+function addToCart(product) {
+  cart.push(product);
+  renderCart();
+}
+
+function renderCart() {
+  const cartDiv = document.getElementById('cart');
+  cartDiv.innerHTML = "<h2>Cart:</h2>" + cart.join("<br>");
 }
