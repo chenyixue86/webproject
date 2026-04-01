@@ -1,14 +1,34 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
-  <link rel="stylesheet" href="style/main.css">
+    <title>Mijn Webshop</title>
+    <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
-    <h1>Mijn Webshop</h1>
-      <div id="products"></div>
-      <div id="cart"></div>
+
+<div class="container">
+
+    <h1 class="title">Mijn Webshop</h1>
+
+    <div class="auth-box">
+        <h2>Login</h2>
+        <input id="email" placeholder="email" />
+        <input id="password" placeholder="password" type="password" />
+        <button onclick="login()" class="btn">Login</button>
+    </div>
+
+    <h2>Producten</h2>
+    <div id="products" class="product-grid"></div>
+
+    <h2>Winkelmand</h2>
+    <div id="cart" class="cart-box"></div>
+
+    <button onclick="checkout()" class="btn checkout-btn">Checkout</button>
+
+</div>
+
+<script src="script.js"></script>
 </body>
 </html>
+
