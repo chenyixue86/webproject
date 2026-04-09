@@ -4,9 +4,8 @@
 // -------------------------------
 let cart = [];
 
-// -------------------------------
 // LOAD PRODUCTS FROM BACKEND
-// -------------------------------
+
 async function loadProducts() {
   const res = await fetch('http://127.0.0.1:5000/products');
   const products = await res.json();
@@ -27,17 +26,15 @@ async function loadProducts() {
   });
 }
 
-// -------------------------------
 // ADD TO CART
-// -------------------------------
+
 function addToCart(product) {
   cart.push(product);
   renderCart();
 }
 
-// -------------------------------
 // RENDER CART
-// -------------------------------
+
 function renderCart() {
   const cartDiv = document.getElementById('cart');
   cartDiv.innerHTML = "";
@@ -55,17 +52,15 @@ function renderCart() {
   });
 }
 
-// -------------------------------
 // REMOVE FROM CART
-// -------------------------------
+
 function removeFromCart(index) {
   cart.splice(index, 1);
   renderCart();
 }
 
-// -------------------------------
 // LOGIN
-// -------------------------------
+
 async function login() {
   const email = document.getElementById('email').value;
   const password = document.getElementById('password').value;
@@ -80,9 +75,8 @@ async function login() {
   alert(JSON.stringify(data));
 }
 
-// -------------------------------
 // CHECKOUT
-// -------------------------------
+
 async function checkout() {
   const res = await fetch('http://127.0.0.1:5000/order', {
     method: "POST",
@@ -94,8 +88,6 @@ async function checkout() {
   alert("Order placed!");
 }
 
-// -------------------------------
-// INITIAL LOAD
-// -------------------------------
+
 loadProducts();
 
