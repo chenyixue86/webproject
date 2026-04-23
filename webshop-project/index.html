@@ -1,34 +1,213 @@
-
 <!DOCTYPE html>
-<html>
+<html lang="nl">
 <head>
-    <title>Mijn Webshop</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nike. Just Do It.</title>
     <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
 
-<div class="container">
-
-    <h1 class="title">Mijn Webshop</h1>
-
-    <div class="auth-box">
-        <h2>Login</h2>
-        <input id="email" placeholder="email" />
-        <input id="password" placeholder="password" type="password" />
-        <button onclick="login()" class="btn">Login</button>
+<!-- UTILITY BAR -->
+<div class="utility-bar">
+    <div class="utility-inner">
+        <div class="utility-left">
+            <span class="brand-link">Jordan</span>
+            <span class="brand-link">Converse</span>
+        </div>
+        <div class="utility-right">
+            <a href="#" class="utility-link">Find a Store</a>
+            <span class="utility-sep">|</span>
+            <a href="#" class="utility-link">Help</a>
+            <span class="utility-sep">|</span>
+            <a href="#" class="utility-link" onclick="openLogin(); return false;">Join Us</a>
+            <span class="utility-sep">|</span>
+            <a href="#" class="utility-link" onclick="openLogin(); return false;">Sign In</a>
+        </div>
     </div>
+</div>
 
-    <h2>Producten</h2>
-    <div id="products" class="product-grid"></div>
+<!-- NAVBAR -->
+<nav class="navbar">
+    <div class="nav-inner">
+        <div class="nav-logo">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="55" height="20">
+                <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
+            </svg>
+        </div>
+        <div class="nav-links">
+            <a href="#" class="nav-link">New</a>
+            <a href="#" class="nav-link">Men</a>
+            <a href="#" class="nav-link">Women</a>
+            <a href="#" class="nav-link">Kids</a>
+            <a href="#" class="nav-link">Sport</a>
+            <a href="#" class="nav-link">NikeSKIMS</a>
+        </div>
+        <div class="nav-right">
+            <div class="search-box">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input type="text" placeholder="Search" id="search-input" oninput="filterProducts()" />
+            </div>
+            <button class="icon-btn" onclick="openLogin()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+            </button>
+            <button class="icon-btn cart-icon-btn" onclick="toggleCart()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <path d="M16 10a4 4 0 0 1-8 0"/>
+                </svg>
+                <span id="cart-count" class="cart-count">0</span>
+            </button>
+        </div>
+    </div>
+</nav>
 
-    <h2>Winkelmand</h2>
-    <div id="cart" class="cart-box"></div>
+<!-- HERO -->
+<section class="hero">
+    <img src="images/herosection.png" alt="Hero" class="hero-bg-img" />
+</section>
 
-    <button onclick="checkout()" class="btn checkout-btn">Checkout</button>
+<!-- CAMPAIGN GRID -->
+<section class="campaign-grid">
+    <div class="campaign-card">
+        <img src="images/image.png" alt="Campaign 1" class="campaign-img" />
+        <div class="campaign-info">
+            <p class="camp-eyebrow">ACG Pegasus Trail</p>
+            <p class="camp-title">All-Terrain Horsepower</p>
+            <a href="#" class="shop-pill">Shop</a>
+        </div>
+    </div>
+    <div class="campaign-card">
+        <img src="images/haaland.png" alt="Campaign 2" class="campaign-img" />
+        <div class="campaign-info">
+            <p class="camp-eyebrow">Phantom 6</p>
+            <p class="camp-title">Haarness Your Haaland</p>
+            <a href="#" class="shop-pill">Shop</a>
+        </div>
+    </div>
+    <div class="campaign-card">
+        <img src="images/3efoto.png" alt="Campaign 3" class="campaign-img" />
+        <div class="campaign-info">
+            <p class="camp-eyebrow">Nike Sportswear</p>
+            <p class="camp-title">Fresh Air</p>
+            <a href="#" class="shop-pill">Shop</a>
+        </div>
+    </div>
+    <div class="campaign-card">
+        <img src="images/4efoto.png" alt="Campaign 4" class="campaign-img" />
+        <div class="campaign-info">
+            <p class="camp-eyebrow">Nike Training</p>
+            <p class="camp-title">Built to Push</p>
+            <a href="#" class="shop-pill">Shop</a>
+        </div>
+    </div>
+</section>
 
+<!-- HERO 2 BANNER -->
+<section class="hero2-banner">
+    <img src="images/hero2section.png" alt="Nike P-6000" class="hero2-img" />
+</section>
+
+<!-- CAROUSEL -->
+<section id="products-section" class="carousel-section">
+    <div class="carousel-header">
+        <h2 class="carousel-title">Shop Our Icons</h2>
+        <div class="carousel-arrows">
+            <button class="carousel-arrow" id="prev-btn" onclick="carouselPrev()">&#8249;</button>
+            <button class="carousel-arrow" id="next-btn" onclick="carouselNext()">&#8250;</button>
+        </div>
+    </div>
+    <div class="carousel-viewport">
+        <div id="products" class="carousel-track"></div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-columns">
+            <div class="footer-col">
+                <h4>Icons</h4>
+                <a href="#">Air Force 1</a>
+                <a href="#">Huarache</a>
+                <a href="#">Air Max 90</a>
+                <a href="#">Air Max 95</a>
+            </div>
+            <div class="footer-col">
+                <h4>Shoes</h4>
+                <a href="#">All Shoes</a>
+                <a href="#">Custom Shoes</a>
+                <a href="#">Jordan Shoes</a>
+                <a href="#">Running Shoes</a>
+            </div>
+            <div class="footer-col">
+                <h4>Clothing</h4>
+                <a href="#">All Clothing</a>
+                <a href="#">Modest Wear</a>
+                <a href="#">Hoodies &amp; Pullovers</a>
+                <a href="#">Shirts &amp; Tops</a>
+            </div>
+            <div class="footer-col">
+                <h4>Kids</h4>
+                <a href="#">Infant &amp; Toddler Shoes</a>
+                <a href="#">Kids' Shoes</a>
+                <a href="#">Kids' Jordan Shoes</a>
+                <a href="#">Kids' Basketball Shoes</a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="40" height="16" fill="white">
+                <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
+            </svg>
+            <p>© 2025 Nike, Inc. Alle rechten voorbehouden</p>
+            <div class="footer-links">
+                <a href="#">Guides</a>
+                <a href="#">Terms of Sale</a>
+                <a href="#">Terms of Use</a>
+                <a href="#">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- CART SIDEBAR -->
+<div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
+<aside id="cart-sidebar" class="cart-sidebar">
+    <div class="cart-header">
+        <h3>Your Bag</h3>
+        <button class="close-btn" onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cart" class="cart-items"></div>
+    <div class="cart-footer">
+        <div class="cart-total">
+            <span>Total</span>
+            <span id="cart-total">€0</span>
+        </div>
+        <button onclick="checkout()" class="checkout-btn">Checkout</button>
+    </div>
+</aside>
+
+<!-- LOGIN MODAL -->
+<div id="login-overlay" class="login-overlay" onclick="closeLogin()"></div>
+<div id="login-modal" class="login-modal">
+    <button class="close-btn modal-close" onclick="closeLogin()">✕</button>
+    <div class="modal-swoosh">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="60" height="22">
+            <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
+        </svg>
+    </div>
+    <h2>Your account<br>for everything<br>Nike</h2>
+    <input id="email" type="email" placeholder="Email address" />
+    <input id="password" type="password" placeholder="Password" />
+    <button onclick="login()" class="btn-primary">Sign In</button>
+    <p class="modal-footer-text">Not a Member? <a href="#">Join Us</a></p>
 </div>
 
 <script src="script.js"></script>
 </body>
 </html>
-

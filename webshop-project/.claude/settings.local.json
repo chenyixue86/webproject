@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/c/Users/kevin.xue/OneDrive - Enovation Group/Documents/GitHub/webshop-project/webshop-project/**)",
+      "Read(//c/c/Users/kevin.xue/OneDrive - Enovation Group/Documents/GitHub/webshop-project/webshop-project/backend/**)"
+    ]
+  }
+}

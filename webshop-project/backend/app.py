@@ -6,8 +6,10 @@ CORS(app)
 
 # Fake database
 products = [
-    {"id": 1, "name": "Schoen", "price": 50},
-    {"id": 2, "name": "Shirt", "price": 30}
+    {"id": 1, "name": "Air Force 1 '07", "price": 110, "category": "Nike Sportswear", "image": "images/image.png"},
+    {"id": 2, "name": "Phantom 6", "price": 180, "category": "Nike Football", "image": "images/haaland.png"},
+    {"id": 3, "name": "Air Max 90", "price": 130, "category": "Nike Sportswear", "image": "images/3efoto.png"},
+    {"id": 4, "name": "Nike Dunk Low", "price": 100, "category": "Nike Sportswear", "image": "images/4efoto.png"},
 ]
 
 users = []
