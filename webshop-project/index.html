@@ -1,211 +1,132 @@
 <!DOCTYPE html>
-<html lang="nl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nike. Just Do It.</title>
+    <title>AniTrack — Seasonal Anime Guide</title>
     <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
-
-<!-- UTILITY BAR -->
-<div class="utility-bar">
-    <div class="utility-inner">
-        <div class="utility-left">
-            <span class="brand-link">Jordan</span>
-            <span class="brand-link">Converse</span>
-        </div>
-        <div class="utility-right">
-            <a href="#" class="utility-link">Find a Store</a>
-            <span class="utility-sep">|</span>
-            <a href="#" class="utility-link">Help</a>
-            <span class="utility-sep">|</span>
-            <a href="#" class="utility-link" onclick="openLogin(); return false;">Join Us</a>
-            <span class="utility-sep">|</span>
-            <a href="#" class="utility-link" onclick="openLogin(); return false;">Sign In</a>
-        </div>
-    </div>
-</div>
 
 <!-- NAVBAR -->
 <nav class="navbar">
     <div class="nav-inner">
         <div class="nav-logo">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="55" height="20">
-                <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+                <polygon points="5,3 19,12 5,21" fill="#7c6df8"/>
             </svg>
+            <span class="logo-text">AniTrack</span>
         </div>
-        <div class="nav-links">
-            <a href="#" class="nav-link">New</a>
-            <a href="#" class="nav-link">Men</a>
-            <a href="#" class="nav-link">Women</a>
-            <a href="#" class="nav-link">Kids</a>
-            <a href="#" class="nav-link">Sport</a>
-            <a href="#" class="nav-link">NikeSKIMS</a>
+        <div class="nav-tabs">
+            <button class="nav-tab active" data-tab="airing" onclick="switchTab(this, 'airing')">This Season</button>
+            <button class="nav-tab" data-tab="upcoming" onclick="switchTab(this, 'upcoming')">Upcoming</button>
+            <button class="nav-tab" data-tab="schedule" onclick="switchTab(this, 'schedule')">Schedule</button>
+            <button class="nav-tab" data-tab="top" onclick="switchTab(this, 'top')">Top Anime</button>
+            <button class="nav-tab" id="fav-tab" data-tab="favorites" onclick="switchTab(this, 'favorites')" style="display:none">
+                Favorites
+                <span class="fav-badge" id="fav-badge" style="display:none"></span>
+            </button>
         </div>
-        <div class="nav-right">
-            <div class="search-box">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+        <div class="nav-right-group">
+            <div class="notif-wrapper" id="notif-wrapper" style="display:none">
+                <button class="notif-btn" id="notif-btn" onclick="toggleNotifDropdown()">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                    </svg>
+                    <span class="notif-badge" id="notif-badge" style="display:none"></span>
+                </button>
+                <div class="notif-dropdown" id="notif-dropdown">
+                    <div class="notif-header">
+                        <span>Notifications</span>
+                        <button class="notif-mark-read" onclick="markEpisodesAsSeen()">Mark all read</button>
+                    </div>
+                    <div class="notif-list" id="notif-list"></div>
+                </div>
+            </div>
+            <div class="nav-search">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
                 </svg>
-                <input type="text" placeholder="Search" id="search-input" oninput="filterProducts()" />
+                <input type="text" placeholder="Search..." id="search-input" oninput="handleSearch()" />
             </div>
-            <button class="icon-btn" onclick="openLogin()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                </svg>
-            </button>
-            <button class="icon-btn cart-icon-btn" onclick="toggleCart()">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
-                    <line x1="3" y1="6" x2="21" y2="6"/>
-                    <path d="M16 10a4 4 0 0 1-8 0"/>
-                </svg>
-                <span id="cart-count" class="cart-count">0</span>
-            </button>
+            <button class="signin-btn" id="signin-btn" onclick="openAuthModal()">Sign In</button>
+            <div class="nav-user" id="nav-user" style="display:none">
+                <span class="nav-username" id="nav-username"></span>
+                <button class="signout-btn" onclick="logout()">Sign Out</button>
+            </div>
         </div>
     </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero">
-    <img src="images/herosection.png" alt="Hero" class="hero-bg-img" />
-</section>
+<!-- PAGE HEADER -->
+<header class="page-header">
+    <div class="page-header-inner">
+        <div>
+            <span class="season-badge" id="season-badge">Spring 2025</span>
+            <h1 class="page-title" id="page-title">Currently Airing</h1>
+        </div>
+        <span class="anime-count" id="anime-count"></span>
+    </div>
+</header>
 
-<!-- CAMPAIGN GRID -->
-<section class="campaign-grid">
-    <div class="campaign-card">
-        <img src="images/image.png" alt="Campaign 1" class="campaign-img" />
-        <div class="campaign-info">
-            <p class="camp-eyebrow">ACG Pegasus Trail</p>
-            <p class="camp-title">All-Terrain Horsepower</p>
-            <a href="#" class="shop-pill">Shop</a>
-        </div>
+<!-- SORT BAR -->
+<div class="sort-bar">
+    <div class="sort-bar-inner">
+        <span class="sort-label">Sort by</span>
+        <button class="sort-btn active" onclick="setSort(this, 'score')">Score</button>
+        <button class="sort-btn" onclick="setSort(this, 'date')">Date</button>
+        <button class="sort-btn" onclick="setSort(this, 'episodes')">Episodes</button>
     </div>
-    <div class="campaign-card">
-        <img src="images/haaland.png" alt="Campaign 2" class="campaign-img" />
-        <div class="campaign-info">
-            <p class="camp-eyebrow">Phantom 6</p>
-            <p class="camp-title">Haarness Your Haaland</p>
-            <a href="#" class="shop-pill">Shop</a>
-        </div>
-    </div>
-    <div class="campaign-card">
-        <img src="images/3efoto.png" alt="Campaign 3" class="campaign-img" />
-        <div class="campaign-info">
-            <p class="camp-eyebrow">Nike Sportswear</p>
-            <p class="camp-title">Fresh Air</p>
-            <a href="#" class="shop-pill">Shop</a>
-        </div>
-    </div>
-    <div class="campaign-card">
-        <img src="images/4efoto.png" alt="Campaign 4" class="campaign-img" />
-        <div class="campaign-info">
-            <p class="camp-eyebrow">Nike Training</p>
-            <p class="camp-title">Built to Push</p>
-            <a href="#" class="shop-pill">Shop</a>
-        </div>
-    </div>
-</section>
+</div>
 
-<!-- HERO 2 BANNER -->
-<section class="hero2-banner">
-    <img src="images/hero2section.png" alt="Nike P-6000" class="hero2-img" />
-</section>
+<!-- MAIN -->
+<main class="main">
+    <div id="loading" class="loading">
+        <div class="spinner"></div>
+        <p>Loading anime...</p>
+    </div>
+    <div id="error-msg" class="error-msg" style="display:none">
+        <p>Could not load anime. API may be rate limited, try again in a moment.</p>
+        <button class="retry-btn" onclick="reload()">Retry</button>
+    </div>
+    <div id="anime-grid" class="anime-grid" style="display:none"></div>
+</main>
 
-<!-- CAROUSEL -->
-<section id="products-section" class="carousel-section">
-    <div class="carousel-header">
-        <h2 class="carousel-title">Shop Our Icons</h2>
-        <div class="carousel-arrows">
-            <button class="carousel-arrow" id="prev-btn" onclick="carouselPrev()">&#8249;</button>
-            <button class="carousel-arrow" id="next-btn" onclick="carouselNext()">&#8250;</button>
-        </div>
-    </div>
-    <div class="carousel-viewport">
-        <div id="products" class="carousel-track"></div>
-    </div>
-</section>
+<!-- ANIME MODAL -->
+<div id="modal-overlay" class="modal-overlay" onclick="closeModal()"></div>
+<div id="anime-modal" class="anime-modal">
+    <div id="modal-content" class="modal-content"></div>
+</div>
 
-<!-- FOOTER -->
-<footer class="footer">
-    <div class="footer-inner">
-        <div class="footer-columns">
-            <div class="footer-col">
-                <h4>Icons</h4>
-                <a href="#">Air Force 1</a>
-                <a href="#">Huarache</a>
-                <a href="#">Air Max 90</a>
-                <a href="#">Air Max 95</a>
-            </div>
-            <div class="footer-col">
-                <h4>Shoes</h4>
-                <a href="#">All Shoes</a>
-                <a href="#">Custom Shoes</a>
-                <a href="#">Jordan Shoes</a>
-                <a href="#">Running Shoes</a>
-            </div>
-            <div class="footer-col">
-                <h4>Clothing</h4>
-                <a href="#">All Clothing</a>
-                <a href="#">Modest Wear</a>
-                <a href="#">Hoodies &amp; Pullovers</a>
-                <a href="#">Shirts &amp; Tops</a>
-            </div>
-            <div class="footer-col">
-                <h4>Kids</h4>
-                <a href="#">Infant &amp; Toddler Shoes</a>
-                <a href="#">Kids' Shoes</a>
-                <a href="#">Kids' Jordan Shoes</a>
-                <a href="#">Kids' Basketball Shoes</a>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="40" height="16" fill="white">
-                <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
-            </svg>
-            <p>© 2025 Nike, Inc. Alle rechten voorbehouden</p>
-            <div class="footer-links">
-                <a href="#">Guides</a>
-                <a href="#">Terms of Sale</a>
-                <a href="#">Terms of Use</a>
-                <a href="#">Privacy Policy</a>
-            </div>
-        </div>
-    </div>
-</footer>
-
-<!-- CART SIDEBAR -->
-<div id="cart-overlay" class="cart-overlay" onclick="toggleCart()"></div>
-<aside id="cart-sidebar" class="cart-sidebar">
-    <div class="cart-header">
-        <h3>Your Bag</h3>
-        <button class="close-btn" onclick="toggleCart()">✕</button>
-    </div>
-    <div id="cart" class="cart-items"></div>
-    <div class="cart-footer">
-        <div class="cart-total">
-            <span>Total</span>
-            <span id="cart-total">€0</span>
-        </div>
-        <button onclick="checkout()" class="checkout-btn">Checkout</button>
-    </div>
-</aside>
-
-<!-- LOGIN MODAL -->
-<div id="login-overlay" class="login-overlay" onclick="closeLogin()"></div>
-<div id="login-modal" class="login-modal">
-    <button class="close-btn modal-close" onclick="closeLogin()">✕</button>
-    <div class="modal-swoosh">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 22" width="60" height="22">
-            <path d="M58 0L20.5 14c-3.2 1.2-6.2 1.8-8.9 1.8C7 15.8 3.9 14.2 2.2 11.4.4 8.5.9 5 3.5 2.6L2.8.8C1 2.3 0 4.4 0 6.8c0 5 5.3 8 12.2 7.2 3.4-.4 7.1-1.6 11-3.3L58 0z"/>
+<!-- AUTH MODAL -->
+<div id="auth-overlay" class="auth-overlay" onclick="closeAuthModal()"></div>
+<div id="auth-modal" class="auth-modal">
+    <button class="auth-close-btn" onclick="closeAuthModal()">✕</button>
+    <div class="auth-logo">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
+            <polygon points="5,3 19,12 5,21" fill="#7c6df8"/>
         </svg>
+        <span>AniTrack</span>
     </div>
-    <h2>Your account<br>for everything<br>Nike</h2>
-    <input id="email" type="email" placeholder="Email address" />
-    <input id="password" type="password" placeholder="Password" />
-    <button onclick="login()" class="btn-primary">Sign In</button>
-    <p class="modal-footer-text">Not a Member? <a href="#">Join Us</a></p>
+    <div class="auth-tabs">
+        <button class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')">Sign In</button>
+        <button class="auth-tab" id="tab-register" onclick="switchAuthTab('register')">Create Account</button>
+    </div>
+
+    <div id="form-login">
+        <input id="login-email" type="email" placeholder="Email address" class="auth-input" />
+        <input id="login-password" type="password" placeholder="Password" class="auth-input" />
+        <p class="auth-error" id="login-error"></p>
+        <button class="auth-submit-btn" onclick="login()">Sign In</button>
+    </div>
+
+    <div id="form-register" style="display:none">
+        <input id="reg-username" type="text" placeholder="Username" class="auth-input" />
+        <input id="reg-email" type="email" placeholder="Email address" class="auth-input" />
+        <input id="reg-password" type="password" placeholder="Password" class="auth-input" />
+        <p class="auth-error" id="register-error"></p>
+        <button class="auth-submit-btn" onclick="register()">Create Account</button>
+    </div>
 </div>
 
 <script src="script.js"></script>

@@ -2,7 +2,13 @@
   "permissions": {
     "allow": [
       "Read(//c/c/Users/kevin.xue/OneDrive - Enovation Group/Documents/GitHub/webshop-project/webshop-project/**)",
-      "Read(//c/c/Users/kevin.xue/OneDrive - Enovation Group/Documents/GitHub/webshop-project/webshop-project/backend/**)"
+      "Read(//c/c/Users/kevin.xue/OneDrive - Enovation Group/Documents/GitHub/webshop-project/webshop-project/backend/**)",
+      "Bash(pip install *)",
+      "Bash(pip3 install *)",
+      "Bash(pkill -f \"python3 backend/app.py\")",
+      "Bash(python3 backend/app.py)",
+      "Bash(curl -s -X POST http://127.0.0.1:5000/register -H \"Content-Type: application/json\" -d '{\"email\":\"test@test.com\",\"username\":\"testuser\",\"password\":\"test123\"}')",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\('OK:', d.get\\('username', d.get\\('error'\\)\\)\\)\")"
     ]
   }
 }
