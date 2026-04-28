@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AniTrack — Seasonal Anime Guide</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style/main.css">
 </head>
 <body>
@@ -58,6 +60,9 @@
     </div>
 </nav>
 
+<!-- HERO SECTION -->
+<section id="hero-section" class="hero-section" style="display:none"></section>
+
 <!-- PAGE HEADER -->
 <header class="page-header">
     <div class="page-header-inner">
@@ -86,8 +91,10 @@
         <p>Loading anime...</p>
     </div>
     <div id="error-msg" class="error-msg" style="display:none">
-        <p>Could not load anime. API may be rate limited, try again in a moment.</p>
+        <p id="error-text">Could not load anime. API may be rate limited, try again in a moment.</p>
         <button class="retry-btn" onclick="reload()">Retry</button>
+        <button class="retry-btn" onclick="testAPI()" style="margin-top:8px;background:#444">Test Connection</button>
+        <p id="test-result" style="font-size:13px;margin-top:8px;color:#aaa"></p>
     </div>
     <div id="anime-grid" class="anime-grid" style="display:none"></div>
 </main>

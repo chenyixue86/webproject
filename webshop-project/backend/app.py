@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 from datetime import datetime, timedelta
+import requests as http_requests
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "*"}},
@@ -120,6 +121,20 @@ def remove_favorite(anime_id):
     db.session.delete(fav)
     db.session.commit()
     return jsonify({'message': 'Removed'})
+
+
+@app.route('/api/anime', methods=['POST'])
+def anime_proxy():
+    try:
+        res = http_requests.post(
+            'https://graphql.anilist.co',
+            json=request.get_json(),
+            headers={'Content-Type': 'application/json'},
+            timeout=10
+        )
+        return jsonify(res.json()), res.status_code
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 
 if __name__ == '__main__':

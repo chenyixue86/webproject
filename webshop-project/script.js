@@ -1,10 +1,11 @@
-const ANILIST = 'https://graphql.anilist.co';
+const ANILIST = 'http://127.0.0.1:5000/api/anime';
 const API = 'http://127.0.0.1:5000';
 
 let currentUser = null;
 let userFavorites = new Set();
 let favoritesData = [];
 let currentModalAnime = null;
+let currentHeroAnime = null;
 
 let allAnime = [];
 let currentTab = 'airing';
@@ -33,8 +34,30 @@ const MEDIA_FIELDS = `
   streamingEpisodes { title thumbnail url site }
 `;
 
+const CACHE_TTL = 10 * 60 * 1000; // 10 minutes
+
+function cacheGet(key) {
+    try {
+        const raw = localStorage.getItem(key);
+        if (!raw) return null;
+        const { data, expires } = JSON.parse(raw);
+        if (Date.now() > expires) { localStorage.removeItem(key); return null; }
+        return data;
+    } catch { return null; }
+}
+
+function cacheSet(key, data) {
+    try {
+        localStorage.setItem(key, JSON.stringify({ data, expires: Date.now() + CACHE_TTL }));
+    } catch {}
+}
+
 async function gqlFetch(queryStr, variables = {}) {
     showLoading();
+    const key = 'ac_' + JSON.stringify(variables);
+    const cached = cacheGet(key);
+    if (cached) return cached;
+
     try {
         const res = await fetch(ANILIST, {
             method: 'POST',
@@ -42,10 +65,13 @@ async function gqlFetch(queryStr, variables = {}) {
             body: JSON.stringify({ query: queryStr, variables })
         });
         const json = await res.json();
-        if (json.errors) throw new Error(json.errors[0].message);
+        if (json.errors) {
+            throw new Error('GraphQL: ' + json.errors[0].message);
+        }
+        cacheSet(key, json.data);
         return json.data;
-    } catch {
-        showError();
+    } catch (err) {
+        showError(err.message);
         return null;
     }
 }
@@ -193,12 +219,60 @@ async function loadTop() {
     renderGrid(sorted(allAnime));
 }
 
+function renderHero(anime) {
+    const hero = document.getElementById('hero-section');
+    const pageHeader = document.querySelector('.page-header');
+    if (!anime || !anime.bannerImage) {
+        hero.style.display = 'none';
+        document.body.classList.remove('has-hero');
+        return;
+    }
+    currentHeroAnime = anime;
+    const title = anime.title.english || anime.title.romaji;
+    const score = anime.averageScore ? (anime.averageScore / 10).toFixed(1) : null;
+    const isFav = userFavorites.has(anime.id);
+    const genres = anime.genres.slice(0, 4).map(g => `<span class="hero-genre">${g}</span>`).join('');
+    const synopsis = anime.description
+        ? anime.description.replace(/<[^>]+>/g, '').trim().slice(0, 220) + '…'
+        : '';
+    const season = anime.season
+        ? anime.season[0] + anime.season.slice(1).toLowerCase() + ' ' + (anime.seasonYear || '')
+        : '';
+
+    hero.innerHTML = `
+    <div class="hero-bg" style="background-image:url('${anime.bannerImage}')"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+        <img src="${anime.coverImage.extraLarge || anime.coverImage.large}" class="hero-cover" alt="${title}" onclick="openModal(${anime.id})" />
+        <div class="hero-info">
+            <div class="hero-badges">
+                ${score ? `<span class="hero-score">★ ${score}</span>` : ''}
+                ${mapFormat(anime.format) !== '?' ? `<span class="hero-badge">${mapFormat(anime.format)}</span>` : ''}
+                ${season ? `<span class="hero-badge">${season}</span>` : ''}
+            </div>
+            <h2 class="hero-title" onclick="openModal(${anime.id})">${title}</h2>
+            ${anime.title.romaji !== title ? `<p class="hero-romaji">${anime.title.romaji}</p>` : ''}
+            <div class="hero-genres">${genres}</div>
+            ${synopsis ? `<p class="hero-synopsis">${synopsis}</p>` : ''}
+            <div class="hero-actions">
+                <button class="hero-btn-primary" onclick="openModal(${anime.id})">View Details</button>
+                <button class="hero-btn-fav ${isFav ? 'active' : ''}" data-id="${anime.id}" onclick="toggleFavorite(${anime.id}, event)">
+                    ${isFav ? '♥ Favorited' : '♡ Favorite'}
+                </button>
+            </div>
+        </div>
+    </div>`;
+
+    hero.style.display = 'block';
+    document.body.classList.add('has-hero');
+}
+
 function reload() {
     if (currentTab === 'airing') loadAiring();
     else if (currentTab === 'upcoming') loadUpcoming();
-    else if (currentTab === 'schedule') loadSchedule();
+    else if (currentTab === 'schedule') { renderHero(null); loadSchedule(); }
     else if (currentTab === 'top') loadTop();
-    else if (currentTab === 'favorites') loadFavoritesView();
+    else if (currentTab === 'favorites') { renderHero(null); loadFavoritesView(); }
 }
 
 async function loadSchedule() {
@@ -342,35 +416,26 @@ function renderGrid(anime) {
         return;
     }
 
-    grid.innerHTML = anime.map(a => {
+    grid.innerHTML = anime.map((a, i) => {
         const title = a.title.english || a.title.romaji;
         const score = a.averageScore ? (a.averageScore / 10).toFixed(1) : 'N/A';
         const color = scoreColor(a.averageScore);
         const episodes = a.episodes ? `${a.episodes} eps` : '? eps';
-        const studio = a.studios.nodes[0]?.name || 'Unknown';
-        const genres = a.genres.slice(0, 2).map(g =>
-            `<span class="genre-tag">${g}</span>`
-        ).join('');
+        const studio = a.studios.nodes[0]?.name || '';
         const image = a.coverImage.extraLarge || a.coverImage.large;
         const sc = statusClass(a.status);
+        const isFav = userFavorites.has(a.id);
 
-        const airingBadge = a.nextAiringEpisode
-            ? `<div class="card-airing">${formatAiring(a.nextAiringEpisode)}</div>`
+        const airingText = a.nextAiringEpisode
+            ? `<span class="card-airing-pill">${formatAiring(a.nextAiringEpisode)}</span>`
             : '';
 
         const dateHtml = currentTab === 'upcoming'
-            ? `<p class="card-date">
-                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:-1px">
-                    <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
-                </svg>
-                ${formatReleaseDate(a.startDate)}
-               </p>`
+            ? `<span class="card-date-pill">${formatReleaseDate(a.startDate)}</span>`
             : '';
 
-        const isFav = userFavorites.has(a.id);
-
         return `
-        <div class="anime-card" onclick="openModal(${a.id})">
+        <div class="anime-card" onclick="openModal(${a.id})" style="animation-delay:${i * 35}ms">
             <div class="card-img-wrap">
                 <img src="${image}" alt="${title}" class="card-img" loading="lazy" />
                 <div class="card-score">
@@ -380,20 +445,25 @@ function renderGrid(anime) {
                 <button class="fav-btn ${isFav ? 'active' : ''}" data-id="${a.id}"
                     onclick="toggleFavorite(${a.id}, event)"
                     title="${isFav ? 'Remove from favorites' : 'Add to favorites'}">♥</button>
-                <div class="card-status ${sc}">${mapStatus(a.status)}</div>
-                ${airingBadge}
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">${title}</h3>
-                <p class="card-studio">${studio}</p>
-                ${dateHtml}
-                <div class="card-meta">
-                    <span class="card-eps">${episodes}</span>
-                    <div class="card-genres">${genres}</div>
+                <div class="card-body">
+                    <div class="card-status ${sc}">${mapStatus(a.status)}</div>
+                    <h3 class="card-title">${title}</h3>
+                    ${studio ? `<p class="card-studio">${studio}</p>` : ''}
+                    <div class="card-meta">
+                        <span class="card-eps">${episodes}</span>
+                        ${airingText}${dateHtml}
+                    </div>
                 </div>
             </div>
         </div>`;
     }).join('');
+
+    if (currentTab !== 'favorites') {
+        const featured = allAnime.find(a => a.bannerImage && a.averageScore >= 70)
+            || allAnime.find(a => a.bannerImage)
+            || null;
+        renderHero(featured);
+    }
 }
 
 async function fetchJikanEpisodes(malId) {
@@ -592,10 +662,30 @@ function showLoading() {
     document.getElementById('error-msg').style.display = 'none';
 }
 
-function showError() {
+function showError(msg) {
     document.getElementById('loading').style.display = 'none';
     document.getElementById('anime-grid').style.display = 'none';
     document.getElementById('error-msg').style.display = 'flex';
+    if (msg) document.getElementById('error-text').textContent = msg;
+}
+
+async function testAPI() {
+    const out = document.getElementById('test-result');
+    out.textContent = 'Testing...';
+    try {
+        const res = await fetch('https://graphql.anilist.co', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ query: '{ Page(perPage:1){ media(type:ANIME){ id title { romaji } } } }' })
+        });
+        out.textContent = `Status: ${res.status} ${res.statusText}`;
+        const json = await res.json().catch(() => null);
+        if (json?.data) out.textContent += ' — API werkt! Probeer Retry.';
+        else if (json?.errors) out.textContent += ' — Fout: ' + json.errors[0].message;
+        else out.textContent += ' — Onverwacht antwoord';
+    } catch (e) {
+        out.textContent = 'Netwerk fout: ' + e.message;
+    }
 }
 
 document.addEventListener('keydown', e => {
@@ -843,6 +933,12 @@ function updateFavButtons() {
         btn.classList.toggle('active', userFavorites.has(id));
         btn.title = userFavorites.has(id) ? 'Remove from favorites' : 'Add to favorites';
     });
+    const heroFav = document.querySelector('.hero-btn-fav');
+    if (heroFav && currentHeroAnime) {
+        const isFav = userFavorites.has(currentHeroAnime.id);
+        heroFav.classList.toggle('active', isFav);
+        heroFav.innerHTML = isFav ? '♥ Favorited' : '♡ Favorite';
+    }
 }
 
 function checkNewEpisodes() {
